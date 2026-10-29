@@ -1,0 +1,26 @@
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    DEBIAN_FRONTEND=noninteractive
+
+WORKDIR /app
+
+# Install curl
+RUN apt-get update && apt-get install -y --no-install-recommends curl gcc libpq-dev && rm -rf /var/lib/apt/lists/*
+
+# Install uv for fast dependency resolution
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+# Install Python dependencies
+COPY backend/pyproject.toml* /app/
+RUN uv venv /app/.venv && \
+    uv pip install --python /app/.venv django djangorestframework django-cors-headers feedparser beautifulsoup4 httpx pydantic python-dateutil drf-spectacular gunicorn
+
+COPY backend/ /app/
+
+ENV PATH="/app/.venv/bin:$PATH"
+
+EXPOSE 8001
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
