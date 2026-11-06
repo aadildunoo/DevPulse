@@ -1,0 +1,34 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/.venv
+.venv
+env/
+venv/
+*.egg-info
+.installed.cfg
+*.egg
+backend/staticfiles
+
+# Node & Next.js
+frontend/node_modules
+node_modules
+frontend/.next
+.next
+out
+
+# Environment & local state
+.env
+.env.local
+.env.*.local
+.vscode
+.idea
+*.log
+

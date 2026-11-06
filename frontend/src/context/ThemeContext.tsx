@@ -16,6 +16,19 @@ const ThemeContext = createContext<ThemeContextType>({
   setTheme: () => {},
 });
 
+const applyTheme = (t: Theme) => {
+  const root = document.documentElement;
+  if (t === 'light') {
+    root.classList.remove('dark');
+    root.classList.add('light');
+    root.style.colorScheme = 'light';
+  } else {
+    root.classList.remove('light');
+    root.classList.add('dark');
+    root.style.colorScheme = 'dark';
+  }
+};
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('dark');
   const [, startTransition] = useTransition();
@@ -47,19 +60,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     mediaQuery.addEventListener('change', handleSystemChange);
     return () => mediaQuery.removeEventListener('change', handleSystemChange);
   }, []);
-
-  const applyTheme = (t: Theme) => {
-    const root = document.documentElement;
-    if (t === 'light') {
-      root.classList.remove('dark');
-      root.classList.add('light');
-      root.style.colorScheme = 'light';
-    } else {
-      root.classList.remove('light');
-      root.classList.add('dark');
-      root.style.colorScheme = 'dark';
-    }
-  };
 
   const setTheme = (nextTheme: Theme) => {
     startTransition(() => {

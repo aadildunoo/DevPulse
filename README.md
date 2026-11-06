@@ -103,18 +103,35 @@ The backend exposes versioned REST APIs under `/api/v1/`:
 
 ## 5. Getting Started (Local Development)
 
-### Prerequisites
+### Quick Start (One Command)
+Start both frontend and backend concurrently with full auto-configuration, migration, and colored multiplexed logs:
+```bash
+./start.sh
+```
+Useful options:
+```bash
+./start.sh --kill       # Automatically free ports 8001 / 3000 if occupied
+./start.sh --seed       # Re-seed baseline data (categories, tech hubs, verified sources)
+./start.sh --ingest     # Run real-time news & CVE ingestion pipeline
+./start.sh --docker     # Run local environment inside Docker Compose
+```
+
+---
+
+### Manual Setup (Step-by-Step)
+
+#### Prerequisites
 - Python 3.12+ (or `uv`)
 - Node.js 20+ and npm
 
-### 1. Clone & Set Up Backend
+#### 1. Set Up Backend
 ```bash
 cd backend
 
 # Create virtualenv and install dependencies
 uv venv .venv --python 3.12
 source .venv/bin/activate
-uv pip install django djangorestframework django-cors-headers feedparser beautifulsoup4 httpx pydantic python-dateutil drf-spectacular
+uv pip install -r requirements.txt
 
 # Run database migrations
 python manage.py migrate
@@ -129,7 +146,7 @@ python manage.py run_ingestion
 python manage.py runserver 0.0.0.0:8001
 ```
 
-### 2. Set Up Frontend
+#### 2. Set Up Frontend
 ```bash
 cd ../frontend
 
@@ -144,7 +161,37 @@ Open `http://localhost:3000` in your browser.
 
 ---
 
-## 6. Running Tests & Quality Checks
+## 6. Production Server Deployment (One-Go)
+
+DevPulse provides `deploy.sh` to build, configure, and launch the complete stack on a server in one go:
+
+### Deploy On-Server Directly
+```bash
+./deploy.sh
+```
+With custom domain:
+```bash
+./deploy.sh --domain yourdomain.com
+```
+
+### Deploy to Remote Server via SSH
+Deploy from your local machine to any remote server in one command:
+```bash
+./deploy.sh --remote ubuntu@your-server-ip
+```
+
+### Production Management Commands
+```bash
+./deploy.sh --status    # Check container health and API telemetry
+./deploy.sh --logs      # Tail real-time aggregated container logs
+./deploy.sh --restart   # Restart production containers
+./deploy.sh --ingest    # Trigger live intelligence ingestion pipeline inside container
+./deploy.sh --stop      # Gracefully stop containers
+```
+
+---
+
+## 7. Running Tests & Quality Checks
 
 ### Backend Automated Test Suite
 ```bash
@@ -160,20 +207,6 @@ npm run lint
 npm run build
 ```
 *Output: Next.js Turbopack compilation succeeded with 0 errors across all 21 static and dynamic routes (including Home, Live, AI, Frameworks, Security, OSS, Briefings, Article Detail, Tech Hubs, Admin Dashboard, About, Contact, Sitemap, Robots).*
-
----
-
-## 7. Docker Deployment
-
-Launch the complete full-stack platform using Docker Compose:
-```bash
-docker compose up --build
-```
-- Frontend: `http://localhost:3000`
-- Admin Telemetry & Operations: `http://localhost:3000/admin-dashboard`
-- Backend API: `http://localhost:8001/api/v1/`
-- API Interactive Docs: `http://localhost:8001/api/v1/docs/`
-- System Health Check: `http://localhost:8001/api/v1/health/`
 
 ---
 
