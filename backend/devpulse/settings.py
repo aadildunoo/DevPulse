@@ -119,13 +119,29 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS Settings
+# CORS & CSRF Settings
 CORS_ALLOW_ALL_ORIGINS = DEBUG
+
+_env_cors = os.environ.get('CORS_ALLOWED_ORIGINS', '')
+_extra_origins = [o.strip() for o in _env_cors.split(',') if o.strip()]
+
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'http://localhost:8001',
     'http://127.0.0.1:8001',
+    'https://devpulse-hq.netlify.app',
+    'https://devpulse123.netlify.app',
+] + _extra_origins
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https:\/\/.*\.netlify\.app$",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://*.netlify.app',
 ]
 CORS_ALLOW_CREDENTIALS = True
 
