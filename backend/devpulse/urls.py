@@ -5,6 +5,7 @@ Versioned REST API v1 routing and administrative endpoints.
 
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from core.views import HealthCheckView
@@ -77,7 +78,23 @@ api_v1_patterns = [
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]
 
+def root_status_view(request):
+    return JsonResponse({
+        "status": "online",
+        "service": "DevPulse Technology Intelligence API",
+        "version": "1.0.0",
+        "endpoints": {
+            "health": "/api/v1/health/",
+            "docs": "/api/v1/docs/",
+            "feed": "/api/v1/feed/",
+            "articles": "/api/v1/articles/",
+            "markets": "/api/v1/markets/overview/",
+        }
+    })
+
 urlpatterns = [
+    path('', root_status_view, name='root-status'),
+    path('health/', HealthCheckView.as_view(), name='root-health'),
     path('admin/', admin.site.urls),
     path('api/v1/', include((api_v1_patterns, 'api-v1'))),
 ]
