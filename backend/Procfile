@@ -1,1 +1,1 @@
-web: sh -c "python manage.py migrate --noinput && python -c 'import django, os; os.environ.setdefault(\"DJANGO_SETTINGS_MODULE\", \"devpulse.settings\"); django.setup(); from news.models import Category; from django.core.management import call_command; not Category.objects.exists() and call_command(\"seed_devpulse\")' && python -m gunicorn devpulse.wsgi:application --bind 0.0.0.0:\${PORT:-8001} --workers 2 --timeout 120"
+web: bash start_server.sh
