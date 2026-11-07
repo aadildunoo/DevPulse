@@ -31,6 +31,8 @@ wheels/
 *.egg
 backend/db.sqlite3
 backend/db.sqlite3-journal
+backend/staticfiles/
+staticfiles/
 
 # Node
 frontend/node_modules/
