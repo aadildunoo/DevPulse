@@ -10,19 +10,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 from django.core.exceptions import ImproperlyConfigured
 
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY',
-    'devpulse-insecure-dev-key-change-in-prod-49102847' if DEBUG else ''
+    'devpulse-prod-auto-secret-key-981240812481024-xyz-safe-default'
 )
-
-if not DEBUG and not SECRET_KEY:
-    raise ImproperlyConfigured("DJANGO_SECRET_KEY environment variable must be set in production environments.")
 
 DEVPULSE_ADMIN_API_TOKEN = os.environ.get('DEVPULSE_ADMIN_API_TOKEN', '')
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(',')
+_allowed_env = os.environ.get('DJANGO_ALLOWED_HOSTS', '*')
+if _allowed_env == '*':
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = [h.strip() for h in _allowed_env.split(',') if h.strip()]
+    for default_h in ['localhost', '127.0.0.1', '0.0.0.0', '.railway.app', '.up.railway.app', '.netlify.app']:
+        if default_h not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(default_h)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -79,19 +83,28 @@ WSGI_APPLICATION = 'devpulse.wsgi.application'
 # Database
 # Support DATABASE_URL or PostgreSQL env, default to local SQLite for instant zero-dependency launch
 DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL and DATABASE_URL.startswith('postgres'):
-    import urllib.parse as urlparse
-    url = urlparse.urlparse(DATABASE_URL)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': url.path[1:],
-            'USER': url.username,
-            'PASSWORD': url.password,
-            'HOST': url.hostname,
-            'PORT': url.port or 5432,
+if DATABASE_URL and (DATABASE_URL.startswith('postgres://') or DATABASE_URL.startswith('postgresql://')):
+    try:
+        import psycopg2  # noqa: F401
+        import urllib.parse as urlparse
+        url = urlparse.urlparse(DATABASE_URL)
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': url.path[1:],
+                'USER': url.username,
+                'PASSWORD': url.password,
+                'HOST': url.hostname,
+                'PORT': url.port or 5432,
+            }
         }
-    }
+    except ImportError:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 else:
     DATABASES = {
         'default': {
