@@ -38,11 +38,12 @@ else:
     print('==> Database already seeded.')
 "
 
-# Start Gunicorn server
-PORT="${PORT:-8001}"
-echo "==> Starting Gunicorn on port ${PORT}..."
+# Start Gunicorn server (bind to $PORT, 8080, and 8001 so any Railway port routing succeeds)
+PORT="${PORT:-8080}"
+echo "==> Starting Gunicorn on port ${PORT} (and 8001)..."
 exec $PY -m gunicorn devpulse.wsgi:application \
     --bind "0.0.0.0:${PORT}" \
+    --bind "0.0.0.0:8001" \
     --workers 2 \
     --timeout 120 \
     --access-logfile - \

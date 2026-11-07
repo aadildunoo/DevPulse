@@ -42,9 +42,10 @@ elif [ "${DJANGO_DEBUG:-False}" = "True" ] || [ "${DJANGO_DEBUG:-False}" = "true
     echo "==> [Backend] Starting Django development server on 0.0.0.0:${PORT:-8001}..."
     exec $PY manage.py runserver 0.0.0.0:${PORT:-8001}
 else
-    echo "==> [Backend] Starting Gunicorn production server on 0.0.0.0:${PORT:-8001}..."
+    echo "==> [Backend] Starting Gunicorn production server on ${PORT:-8080} and 8001..."
     exec $PY -m gunicorn devpulse.wsgi:application \
-        --bind 0.0.0.0:${PORT:-8001} \
+        --bind "0.0.0.0:${PORT:-8080}" \
+        --bind "0.0.0.0:8001" \
         --workers "${GUNICORN_WORKERS:-3}" \
         --timeout 120 \
         --access-logfile - \
