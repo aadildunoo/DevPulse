@@ -29,12 +29,12 @@ fi
 if [ "$#" -gt 0 ]; then
     exec "$@"
 elif [ "${DJANGO_DEBUG:-False}" = "True" ] || [ "${DJANGO_DEBUG:-False}" = "true" ] || [ "${DJANGO_DEBUG:-False}" = "1" ]; then
-    echo "==> [Backend] Starting Django development server on 0.0.0.0:8001..."
-    exec python manage.py runserver 0.0.0.0:8001
+    echo "==> [Backend] Starting Django development server on 0.0.0.0:${PORT:-8001}..."
+    exec python manage.py runserver 0.0.0.0:${PORT:-8001}
 else
-    echo "==> [Backend] Starting Gunicorn production server on 0.0.0.0:8001..."
+    echo "==> [Backend] Starting Gunicorn production server on 0.0.0.0:${PORT:-8001}..."
     exec python -m gunicorn devpulse.wsgi:application \
-        --bind 0.0.0.0:8001 \
+        --bind 0.0.0.0:${PORT:-8001} \
         --workers "${GUNICORN_WORKERS:-3}" \
         --timeout 120 \
         --access-logfile - \

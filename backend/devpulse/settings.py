@@ -142,6 +142,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'https://*.netlify.app',
+    'https://*.up.railway.app',
+    'https://*.railway.app',
 ]
 CORS_ALLOW_CREDENTIALS = True
 
